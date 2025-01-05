@@ -1,0 +1,122 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+}
+
+.rss-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 20px;
+    background-color: #b2b2b2;
+    box-sizing: border-box;
+}
+
+.rss-add input[type="text"], .rss-add button {
+    padding: 10px;
+    font-size: 14px;
+}
+
+#rss-name {
+    width: 25%;
+    min-width: 150px;
+}
+
+#rss-url {
+    width: 65%;
+    min-width: 200px;
+}
+
+.rss-add button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.rss-add button:hover {
+    background-color: #0056b3;
+}
+
+.container {
+    padding: 20px;
+}
+
+.container-feed {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+#container-feed-collection {
+    width: 30%;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+}
+
+#container-feed-viewer {
+    width: 60%;
+    padding: 10px;
+}
+
+.feed-collection {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.feed-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.feed-item h3 {
+    margin: 0;
+}
+
+.feed-item p {
+    margin: 0;
+}
+
+.feed-item small {
+    display: block;
+    margin-top: 10px;
+    color: #666;
+}
+
+button {
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #e2e2e2;
+}
+
+button i {
+    color: #333;
+}

@@ -1,0 +1,155 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>📚RSS Reader</title>
+    <script src="https://unpkg.com/dexie@3.0.3/dist/dexie.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>📚RSS Reader</h1>
+    
+    <div class="rss-add">
+        <label for="rss-url">NEW</label>
+        <input type="text" id="rss-name" placeholder="Enter RSS name">
+        <input type="text" id="rss-url" placeholder="Enter RSS url">
+        <button onclick="addRSSToCollection()">ADD</button>
+    </div>
+
+    <div class="container">
+        <div class="container-feed">
+            <div id="container-feed-collection"></div>
+            <div id="container-feed-viewer"></div>
+        </div>
+    </div>
+
+    <script>
+        const db = new Dexie("RSSReader");
+        db.version(1).stores({
+            collections: "++id, name, url",
+        });
+
+        async function displayCollection() {
+            const count = await db.collections.count();
+            if (count === 0) {
+                await db.collections.bulkAdd([
+                    { title: "BBC News", url: "http://feeds.bbci.co.uk/news/rss.xml" },
+                    { title: "CNN", url: "http://rss.cnn.com/rss/edition.rss" },
+                    { title: "The Guardian", url: "https://www.theguardian.com/uk/rss" },
+                ]);
+            }
+
+            const collections = await db.collections.toArray();
+
+            const container = document.getElementById("container-feed-collection");
+            container.innerHTML = "";
+
+            collections.forEach((collection) => {
+                const collectionDiv = document.createElement("div");
+                collectionDiv.classList.add("feed-collection");
+
+                collectionDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                        <h3 style="display: flex; align-items: center; gap: 5px; margin: 0;">
+                            <span>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/4/46/Generic_Feed-icon.svg" 
+                                    alt="RSS icon" 
+                                    width="15" 
+                                    style="vertical-align: middle;">
+                            </span>
+                            ${collection.title}
+                        </h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="fetchFeed('${collection.url}')" title="Load Feed">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                            <button onclick="deleteFeed(${collection.id})" title="Delete Feed">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(collectionDiv);
+            });
+        }
+
+        function addRSSToCollection(){
+            const name = document.getElementById("rss-name").value;
+            const url = document.getElementById("rss-url").value;
+
+            if(!name || !url){
+                alert("Please enter a name and URL");
+                return;
+            }
+
+            db.collections.add({title: name, url: url}).then(() => {
+                displayCollection();
+            });
+        }
+
+        function deleteFeed(id){
+            db.collections.delete(id).then(() => {
+                displayCollection();
+            });
+        }
+
+        function displayFeed(feedItems) {
+            const container = document.getElementById("container-feed-viewer");
+            container.innerHTML = "";
+
+            feedItems.forEach((item) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("feed-item");
+
+                itemDiv.innerHTML = `
+                    <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+                    <p>${item.description}</p>
+                    <small>${new Date(item.pubDate).toLocaleString()}</small>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        function parseFeed(feedText){
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(feedText, 'application/xml');
+
+            const items = xmlDoc.querySelectorAll('item');
+            const feedItems = Array.from(items).map((item) => ({
+                title: item.querySelector("title")?.textContent,
+                link: item.querySelector("link")?.textContent,
+                description: item.querySelector("description")?.textContent,
+                pubDate: item.querySelector("pubDate")?.textContent,
+            }));
+
+            displayFeed(feedItems);
+        }
+
+        async function fetchFeed(feedUrl){
+            const response = await fetch(`http://localhost:3000/rss?url=${encodeURIComponent(feedUrl)}`);
+            if(response.status !== 200) {
+                res.status(500).send('Error');
+                return;
+            }
+            const feedText = await response.text();
+
+            parseFeed(feedText);
+        }
+
+        async function loadFeed(){
+            const feedUrl = document.getElementById("rss-url").value;
+            if(!feedUrl){
+                alert("Please enter a feed URL");
+                return;
+            }
+
+            await fetchFeed(feedUrl);
+        }
+
+        async function init(){
+            await displayCollection();
+        }
+
+        init();
+    </script>    
+</body>
+</html>
