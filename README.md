@@ -25,7 +25,7 @@ A simple RSS feed reader to manage and view your feeds, it works for real use or
 ## 🚀 Setup and Running
 
 ```bash
-git clone https://github.com/username/RSSReader.git
+git clone https://github.com/username/rssreader.git
 ```
 ```bash
 cd RSSReader
