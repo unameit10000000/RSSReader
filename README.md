@@ -57,7 +57,6 @@ http://localhost:3000
 ## 📝 Notes
 
 - The server runs on port 3000 by default
-- CORS is enabled for development purposes
 - Feeds are stored locally in the browser using IndexedDB
 - The application uses Font Awesome icons for the UI
 - The application includes CORS headers for development
